@@ -19,8 +19,8 @@ class Vehiculos_Controller {
         if (isset($req->query->marca)) {
             $nombreMarca = $req->query->marca;
             $marca = $this->marcasModel->getMarcaNombre($nombreMarca);
-            if (!$filtrarMarca) {
-                return $this->view->response("No existe la marca $marca", 404);
+            if (!$marca) {
+                return $this->view->response("No existe la marca $marca->nombre", 404);
             }
             $filtrarMarca = $marca->id_marca;
         }

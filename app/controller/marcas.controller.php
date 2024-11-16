@@ -77,6 +77,7 @@ class Marcas_Controller {
         $this->vehiculosModel->deleteVehiculosMarca($marca->nombre);
 
         $id = $this->marcasModel->deleteMarca($id);
+        
         return $this->view->response("Se elimino la marca con el id $id y todos sus vehiculos vinculados");
     }
 

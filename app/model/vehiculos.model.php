@@ -16,8 +16,6 @@ class Vehiculos_Model {
         
         if ($pagina || $limite) {
             $offsetCalculado = $limite * ($pagina - 1);
-            // var_dump($offsetCalculado);
-            // die();
             $sql.=" LIMIT $limite OFFSET $offsetCalculado ";
         }
 
