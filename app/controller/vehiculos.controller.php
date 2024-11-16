@@ -25,6 +25,11 @@ class Vehiculos_Controller {
             $filtrarMarca = $marca->id_marca;
         }
 
+        $filtrarConsumo = null;
+        if (isset($req->query->consumo)) {
+            $filtrarConsumo = explode('-',$req->query->consumo);
+        }
+
         $ordenar = null;
         if (isset($req->query->ordenar)) {
             $ordenar = $req->query->ordenar;  
@@ -42,7 +47,7 @@ class Vehiculos_Controller {
         }
 
 
-        $vehiculos = $this->vehiculosModel->getVehiculos($filtrarMarca, $pagina, $limite,  $ordenar, $ascendente);
+        $vehiculos = $this->vehiculosModel->getVehiculos($filtrarMarca, $filtrarConsumo, $pagina, $limite,  $ordenar, $ascendente);
 
         if (!$vehiculos) {
             if ($filtrarMarca) {

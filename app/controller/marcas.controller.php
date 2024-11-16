@@ -13,7 +13,18 @@ class Marcas_Controller {
     }
 
     public function getMarcas($req, $res) {
+
+        $filtrarValoracion = null;
+        if (isset($req->query->valoracion)) {
+            $filtrarValoracion = explode( '-', $req->query->valoracion);
+        }
         
+        $pagina = null; $limite = null;
+        if (isset($req->query->pagina) || isset($req->query->limite)) {
+            $pagina = $req->query->pagina;
+            $limite = $req->query->limite;
+        }
+
         $ordenar = null;
         if (isset($req->query->ordenar)) {
             $ordenar = $req->query->ordenar;
@@ -24,7 +35,7 @@ class Marcas_Controller {
             $ascendente = true;
         } 
         
-        $marcas = $this->marcasModel->getMarcas($ordenar, $ascendente);
+        $marcas = $this->marcasModel->getMarcas($filtrarValoracion, $ordenar, $ascendente, $pagina, $limite);
         
         if (!$marcas) {
             return $this->view->response("No hay marcas");
@@ -45,11 +56,32 @@ class Marcas_Controller {
         return $this->view->response($marca);
     }
 
+    public function updateMarca($req, $res) {
+
+        $id = $req->params->id;
+        $marca = $this->marcasModel->getMarcaId($id);
+        if (!$marca) {
+            return $this->view->response("No hay ninguna marca con el id $id", 404);
+        }
+        
+        if (empty($req->body["nombre"])) {
+            return $this->view->response("Falta ingresar el nombre", 400);
+        }
+
+        if (empty($req->body["valoracion"])) {
+            return $this->view->response("Falta ingresar el valoracion", 400);
+        }
+
+        $nombre = $req->body["nombre"];
+        $valoracion = $req->body["valoracion"];
+
+        $this->marcasModel->updateMarca($nombre, $valoracion, $id);
+        $marca = $this->marcasModel->getMarcaId($id);
+        
+        return $this->view->response($marca, 200);
+    }
     public function addMarca($req, $res) {
         
-        // Hacemos un if por parametro para retornar un mensaje adecuado
-        // a lo que falte poner
-
         if (empty($req->body["nombre"])) {
             return $this->view->response("Falta ingresar el nombre", 400);
         }
@@ -64,7 +96,7 @@ class Marcas_Controller {
         $id = $this->marcasModel->addMarca($nombre, $valoracion);
         $marca = $this->marcasModel->getMarcaId($id);
         
-        return $this->view->response($marca);
+        return $this->view->response($marca, 201);
     }
 
     public function deleteMarca($req, $res) {
@@ -76,8 +108,8 @@ class Marcas_Controller {
 
         $this->vehiculosModel->deleteVehiculosMarca($marca->nombre);
 
-        $id = $this->marcasModel->deleteMarca($id);
-        
+        $this->marcasModel->deleteMarca($id);
+
         return $this->view->response("Se elimino la marca con el id $id y todos sus vehiculos vinculados");
     }
 

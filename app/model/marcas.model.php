@@ -7,8 +7,31 @@ class Marcas_Model {
         $this->db = new PDO('mysql:host=localhost;'.'dbname=concesionaria;charset=utf8', 'root', '');
     }
 
-    public function getMarcas($ordenar = null, $ascendente = null) {
+    public function getMarcas($filtrarValoracion = null, $ordenar = null, $ascendente = null, $pagina = null, $limite = null) {
         $sql = "SELECT * FROM marcas ";
+
+        if ($filtrarValoracion) {
+            switch ($filtrarValoracion[0]) {
+                case 'menor':
+                    $operacion = "<";
+                    break;
+                case 'mayor':
+                    $operacion = ">";
+                    break;
+                case 'igual':
+                    $operacion = "=";
+                    break;
+            }
+
+
+            $valor = $filtrarValoracion[1];
+            $sql.=" WHERE valoracion $operacion $valor ";
+        }
+
+        if ($pagina || $limite) {
+            $offsetCalculado = $limite * ($pagina - 1);
+            $sql.=" LIMIT $limite OFFSET $offsetCalculado ";
+        }
 
         if ($ordenar) {
             if ($ascendente) {
@@ -63,6 +86,10 @@ class Marcas_Model {
         $id = $this->db->lastInsertId();
     
         return $id;
+    }
+    public function updateMarca($nombre, $valoracion, $id) {
+        $query = $this->db->prepare('UPDATE marcas SET nombre = ?, valoracion = ? WHERE id_marca = ?');
+        $query->execute([$nombre, $valoracion, $id]);
     }
 
     public function deleteMarca($id) {

@@ -7,13 +7,31 @@ class Vehiculos_Model {
         $this->db = new PDO('mysql:host=localhost;'.'dbname=concesionaria;charset=utf8', 'root', '');
     }
 
-    public function getVehiculos($filtrarMarca = null, $pagina = null, $limite = null, $ordenar = null, $ascendente = null) {
+    public function getVehiculos($filtrarMarca = null, $filtrarConsumo = null, $pagina = null, $limite = null, $ordenar = null, $ascendente = null) {
         $sql = "SELECT * FROM vehiculos ";
-
-        if ($filtrarMarca) {
-            $sql.="WHERE marca = $filtrarMarca ";
-        }
         
+        if ($filtrarMarca) {
+            $sql.=" WHERE marca = $filtrarMarca ";
+        }
+
+        if ($filtrarConsumo) {
+            switch ($filtrarConsumo[0]) {
+                case 'menor':
+                    $operacion = "<";
+                    break;
+                case 'mayor':
+                    $operacion = ">";
+                    break;
+                case 'igual':
+                    $operacion = "=";
+                    break;
+            }
+
+
+            $valor = $filtrarConsumo[1];
+            $sql.=" WHERE consumo $operacion $valor ";
+        }
+
         if ($pagina || $limite) {
             $offsetCalculado = $limite * ($pagina - 1);
             $sql.=" LIMIT $limite OFFSET $offsetCalculado ";
@@ -34,6 +52,9 @@ class Vehiculos_Model {
                     case 'descripcion':
                         $sql .= " ORDER BY descripcion ";
                         break;
+                    case 'marca':
+                        $sql .= " ORDER BY marca ";
+                        break;
                 }
             } else {
                 switch ($ordenar) {
@@ -44,15 +65,17 @@ class Vehiculos_Model {
                         $sql .= " ORDER BY consumo DESC ";
                         break;
                     case 'modelo':
-                        $sql .= " ORDER BY modelo";
+                        $sql .= " ORDER BY modelo DESC ";
                         break;
                     case 'descripcion':
-                        $sql .= " ORDER BY descripcion ";
+                        $sql .= " ORDER BY descripcion DESC ";
+                        break;
+                    case 'marca':
+                        $sql .= " ORDER BY marca DESC ";
                         break;
                 }
             }
         }
-
 
         $query = $this->db->prepare($sql);
         $query->execute();
