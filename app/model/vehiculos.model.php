@@ -32,11 +32,6 @@ class Vehiculos_Model {
             $sql.=" WHERE consumo $operacion $valor ";
         }
 
-        if ($pagina || $limite) {
-            $offsetCalculado = $limite * ($pagina - 1);
-            $sql.=" LIMIT $limite OFFSET $offsetCalculado ";
-        }
-
         if ($ordenar) {
             if ($ascendente) {
                 switch ($ordenar) {
@@ -75,6 +70,11 @@ class Vehiculos_Model {
                         break;
                 }
             }
+        }
+  
+        if ($pagina || $limite) {
+            $offsetCalculado = $limite * ($pagina - 1);
+            $sql.=" LIMIT $limite OFFSET $offsetCalculado ";
         }
 
         $query = $this->db->prepare($sql);
