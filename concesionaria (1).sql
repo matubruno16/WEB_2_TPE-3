@@ -100,11 +100,6 @@ INSERT INTO `vehiculos` (`id_vehiculo`, `modelo`, `marca`, `descripcion`, `image
 (36, 'Coupe', 8, 'Un lujo', 'img/vehiculos/default.png', 6, 6),
 (37, 'AMG GT', 8, 'Un poquitin caro pero muy muy lindo', 'img/vehiculos/default.png', 4, 6),
 (38, 'Pulse', 11, 'No tiene nada que ver con las pulsaciones', 'img/vehiculos/default.png', 8, 7),
-(42, 'ejemplo1', 15, 'algo', '', 8, 6),
-(43, 'ejemplo1', 15, 'algo', '', 8, 6),
-(44, 'ejemplo1', 15, 'algo', '', 8, 6),
-(45, 'ejemplo1', 15, 'algo', '', 8, 6),
-(46, 'ejemplo1', 15, 'algo', '', 8, 6);
 
 --
 -- Índices para tablas volcadas
