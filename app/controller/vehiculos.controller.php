@@ -20,7 +20,7 @@ class Vehiculos_Controller {
             $nombreMarca = $req->query->marca;
             $marca = $this->marcasModel->getMarcaNombre($nombreMarca);
             if (!$marca) {
-                return $this->view->response("No existe la marca $marca->nombre", 404);
+                return $this->view->response("No existe la marca $nombreMarca", 404);
             }
             $filtrarMarca = $marca->id_marca;
         }
@@ -28,6 +28,16 @@ class Vehiculos_Controller {
         $filtrarConsumo = null;
         if (isset($req->query->consumo)) {
             $filtrarConsumo = explode('-',$req->query->consumo);
+        }
+
+        $filtrarValoracion = null;
+        if (isset($req->query->valoracion)) {
+            $filtrarValoracions = explode('-',$req->query->valoracion);
+        }
+
+        $filtrarModelo = null;
+        if (isset($req->query->modelo)) {
+            $diltrarModelo = explode('-',$req->query->modelo);
         }
 
         $ordenar = null;
@@ -47,7 +57,7 @@ class Vehiculos_Controller {
         }
 
 
-        $vehiculos = $this->vehiculosModel->getVehiculos($filtrarMarca, $filtrarConsumo, $pagina, $limite,  $ordenar, $ascendente);
+        $vehiculos = $this->vehiculosModel->getVehiculos($filtrarMarca, $filtrarConsumo, $filtrarValoracion, $filtrarModelo, $pagina, $limite,  $ordenar, $ascendente);
 
         if (!$vehiculos) {
             if ($filtrarMarca) {
@@ -82,44 +92,6 @@ class Vehiculos_Controller {
         return $this->view->response("Se elimino el vehiculo con el id $id");
     }
 
-    public function addVehiculo($req, $res) {
-        
-
-        // Hacemos un IF por parametro a chequear para enviar un mensaje claro
-        // de lo que falta ingresar
-
-        if (empty($req->body["modelo"])) {
-            return $this->view->response("Falta ingresar el modelo", 400);
-        }
-
-        if (empty($req->body["marca"])) {
-            return $this->view->response("Falta ingresar la marca", 400);
-        }
-        
-        if (empty($req->body["descripcion"])) {
-            return $this->view->response("Falta ingresar la descripcion", 400);
-        }
-
-        if (empty($req->body["valoracion"])) {
-            return $this->view->response("Falta ingresar la valoracion", 400);
-        }
-        
-        if (empty($req->body["consumo"])) {
-            return $this->view->response("Falta ingresar el consumo", 400);
-        }
-
-        $modelo = $req->body["modelo"];
-        $marca = $req->body["marca"];
-        $descripcion = $req->body["descripcion"];
-        $valoracion = $req->body["valoracion"];
-        $consumo = $req->body["consumo"];
-
-        $id = $this->vehiculosModel->addVehiculo($modelo, $marca, $descripcion, $valoracion, $consumo);
-        $vehiculo = $this->vehiculosModel->getVehiculo($id);
-        
-        return $this->view->response($vehiculo, 201);
-    }
-
     public function updateVehiculo($req, $res) {
         
         $id = $req->params->id;
@@ -128,31 +100,31 @@ class Vehiculos_Controller {
             return $this->view->response("No eciste el vehiculo con el id $id", 404);
         }
 
-        if (empty($req->body["modelo"])) {
+        if (empty($req->body->modelo)) {
             return $this->view->response("Falta ingresar el modelo", 400);
         }
 
-        if (empty($req->body["marca"])) {
+        if (empty($req->body->marca)) {
             return $this->view->response("Falta ingresar la marca", 400);
         }
         
-        if (empty($req->body["descripcion"])) {
+        if (empty($req->body->descripcion)) {
             return $this->view->response("Falta ingresar la descripcion", 400);
         }
 
-        if (empty($req->body["valoracion"])) {
+        if (empty($req->body->valoracion)) {
             return $this->view->response("Falta ingresar la valoracion", 400);
         }
         
-        if (empty($req->body["consumo"])) {
+        if (empty($req->body->consumo)) {
             return $this->view->response("Falta ingresar el consumo", 400);
         }
 
-        $modelo = $req->body["modelo"];
-        $marca = $req->body["marca"];
-        $descripcion = $req->body["descripcion"];
-        $valoracion = $req->body["valoracion"];
-        $consumo = $req->body["consumo"];
+        $modelo = $req->body->modelo;
+        $marca = $req->body->marca;
+        $descripcion = $req->body->descripcion;
+        $valoracion = $req->body->valoracion;
+        $consumo = $req->body->consumo;
 
         $this->vehiculosModel->updateVehiculo($modelo, $marca, $descripcion, $valoracion, $consumo, $id);
         $vehiculo = $this->vehiculosModel->getVehiculo($id);
@@ -160,4 +132,127 @@ class Vehiculos_Controller {
         return $this->view->response($vehiculo, 200);
     }
 
+    public function addVehiculo($req, $res) {
+        
+
+        // Hacemos un IF por parametro a chequear para enviar un mensaje claro
+        // de lo que falta ingresar
+
+        if (empty($req->body->modelo)) {
+            return $this->view->response("Falta ingresar el modelo", 400);
+        }
+
+        if (empty($req->body->marca)) {
+            return $this->view->response("Falta ingresar la marca", 400);
+        }
+        
+        if (empty($req->body->descripcion)) {
+            return $this->view->response("Falta ingresar la descripcion", 400);
+        }
+
+        if (empty($req->body->valoracion)) {
+            return $this->view->response("Falta ingresar la valoracion", 400);
+        }
+        
+        if (empty($req->body->consumo)) {
+            return $this->view->response("Falta ingresar el consumo", 400);
+        }
+
+        $modelo = $req->body->modelo;
+        $marca = $req->body->marca;
+        $descripcion = $req->body->descripcion;
+        $valoracion = $req->body->valoracion;
+        $consumo = $req->body->consumo;
+
+        $id = $this->vehiculosModel->addVehiculo($modelo, $marca, $descripcion, $valoracion, $consumo);
+        $vehiculo = $this->vehiculosModel->getVehiculo($id);
+        
+        return $this->view->response($vehiculo, 201);
+    }
+
 }
+
+
+// public function addVehiculo($req, $res) {
+        
+//         // ACLARACION: esta funcion de addVehiculo y updateVehiculo funciona en el caso de que se
+//         // este usando ThunderClient para revisar la aplicacion.
+//         // Nosotros usamos thunder client y este guarda la data del body en un
+//         // arreglo en vez de un objeto como en Postman.
+//         // Hicimos esta funcion por las dudas, que en realidad es lo mismo porque
+//         // lo unico que cambia es la sintaxis de como se le pide la informacion al body
+//         // (depende si viene en un arreglo o como objeto).
+    
+    //     if (empty($req->body["modelo"])) {
+    //         return $this->view->response("Falta ingresar el modelo", 400);
+    //     }
+    
+    //     if (empty($req->body["marca"])) {
+    //         return $this->view->response("Falta ingresar la marca", 400);
+    //     }
+        
+    //     if (empty($req->body["descripcion"])) {
+    //         return $this->view->response("Falta ingresar la descripcion", 400);
+    //     }
+    
+    //     if (empty($req->body["valoracion"])) {
+    //         return $this->view->response("Falta ingresar la valoracion", 400);
+    //     }
+        
+    //     if (empty($req->body["consumo"])) {
+    //         return $this->view->response("Falta ingresar el consumo", 400);
+    //     }
+    
+    //     $modelo = $req->body["modelo"];
+    //     $marca = $req->body["marca"];
+    //     $descripcion = $req->body["descripcion"];
+    //     $valoracion = $req->body["valoracion"];
+    //     $consumo = $req->body["consumo"];
+    
+    //     $id = $this->vehiculosModel->addVehiculo($modelo, $marca, $descripcion, $valoracion, $consumo);
+    //     $vehiculo = $this->vehiculosModel->getVehiculo($id);
+        
+    //     return $this->view->response($vehiculo, 201);
+    // }
+    
+    
+    
+    // public function updateVehiculo($req, $res) {
+            
+    //     $id = $req->params->id;
+    //     $vehiculo = $this->vehiculosModel->getVehiculo($id);
+    //     if (!$id) {
+    //         return $this->view->response("No eciste el vehiculo con el id $id", 404);
+    //     }
+    
+    //     if (empty($req->body["modelo"])) {
+    //         return $this->view->response("Falta ingresar el modelo", 400);
+    //     }
+    
+    //     if (empty($req->body["marca"])) {
+    //         return $this->view->response("Falta ingresar la marca", 400);
+    //     }
+        
+    //     if (empty($req->body["descripcion"])) {
+    //         return $this->view->response("Falta ingresar la descripcion", 400);
+    //     }
+    
+    //     if (empty($req->body["valoracion"])) {
+    //         return $this->view->response("Falta ingresar la valoracion", 400);
+    //     }
+        
+    //     if (empty($req->body["consumo"])) {
+    //         return $this->view->response("Falta ingresar el consumo", 400);
+    //     }
+    
+    //     $modelo = $req->body["modelo"];
+    //     $marca = $req->body["marca"];
+    //     $descripcion = $req->body["descripcion"];
+    //     $valoracion = $req->body["valoracion"];
+    //     $consumo = $req->body["consumo"];
+    
+    //     $this->vehiculosModel->updateVehiculo($modelo, $marca, $descripcion, $valoracion, $consumo, $id);
+    //     $vehiculo = $this->vehiculosModel->getVehiculo($id);
+        
+    //     return $this->view->response($vehiculo, 200);
+    //     }

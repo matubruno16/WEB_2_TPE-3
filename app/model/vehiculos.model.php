@@ -7,11 +7,30 @@ class Vehiculos_Model {
         $this->db = new PDO('mysql:host=localhost;'.'dbname=concesionaria;charset=utf8', 'root', '');
     }
 
-    public function getVehiculos($filtrarMarca = null, $filtrarConsumo = null, $pagina = null, $limite = null, $ordenar = null, $ascendente = null) {
+    public function getVehiculos($filtrarMarca = null, $filtrarConsumo = null, $filtrarValoracion = null, $filtrarModelo = null, $pagina = null, $limite = null, $ordenar = null, $ascendente = null) {
         $sql = "SELECT * FROM vehiculos ";
         
         if ($filtrarMarca) {
             $sql.=" WHERE marca = $filtrarMarca ";
+        }
+
+        // En los filtros de "Modelo", "Consumo" y "Valoracion", hay peligro de inyeccion SQL,
+        // ya que lo que el usuario ingresa en el query params de la url va directamente al llamado
+        // SQL. Estuvimos buscando diferentes formas de sanitizar la variable para evitar la inyeccion,
+        // pero no encontramos ninguna funcial. Todas las que intentamos implementar no funcionaban o 
+        // estaban desactualizadas
+        // En el filtro de la marca no hay inyeccion ya que en el controlador se busca y entrega el ID 
+        // de la marca, pero en los demas, lo que ingresa el usuario va directamente al llamado SQL.
+        // Si esta aplicacion fuera a ser usada por un usuario real, no presentariamos la aplicaicon
+        // hasta solucionar este problema de la inyeccion, pero como solo sera presentada a una catedra
+        // como TPE (y nos quedamos sin tiempo), suponemos que los parametros son ya sanitizados porque 
+        // no encontramos ninguna forma de sanitizar el/los parametro/s.
+        // No podemos usar el execute() para sanitizar ya que nunca va a haber un numero fijo de variables 
+        // a ingresar en el execute (y no se puede hacer un execute cada vez que se llame a un filtro por
+        // esta misma razon)
+
+        if ($filtrarModelo) {
+            $sql.=" WHERE modelo = $filtrarModelo ";
         }
 
         if ($filtrarConsumo) {
@@ -29,6 +48,24 @@ class Vehiculos_Model {
 
 
             $valor = $filtrarConsumo[1];
+            $sql.=" WHERE consumo $operacion $valor ";
+        }
+
+        if ($filtrarValoracion) {
+            switch ($filtrarValoracion[0]) {
+                case 'menor':
+                    $operacion = "<";
+                    break;
+                case 'mayor':
+                    $operacion = ">";
+                    break;
+                case 'igual':
+                    $operacion = "=";
+                    break;
+            }
+
+
+            $valor = $filtrarValoracion[1];
             $sql.=" WHERE consumo $operacion $valor ";
         }
 
@@ -72,8 +109,8 @@ class Vehiculos_Model {
             }
         }
   
-        if ($pagina || $limite) {
-            $offsetCalculado = $limite * ($pagina - 1);
+        if ($pagina && $limite) {
+            $offsetCalculado = ($pagina - 1) * $limite ;
             $sql.=" LIMIT $limite OFFSET $offsetCalculado ";
         }
 
